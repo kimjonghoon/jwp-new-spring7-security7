@@ -29,13 +29,16 @@ public class MvcWebApplicationInitializer extends AbstractAnnotationConfigDispat
 		return new Filter[] { new HiddenHttpMethodFilter() };
 	}
 
+	//서블릿 등록 시 추가적인 서블릿 옵션을 줄 때 사용
 	@Override
 	protected void customizeRegistration(Dynamic registration) {
 		long maxFileSize = 1048576;
 		long maxRequestSize = 1048576;
 		int fileSizeThreshold = 524288;
-		MultipartConfigElement multipartConfigElement = new MultipartConfigElement(null, maxFileSize, maxRequestSize, fileSizeThreshold);
+		MultipartConfigElement multipartConfigElement = 
+				new MultipartConfigElement(null, maxFileSize, maxRequestSize, fileSizeThreshold);
 		registration.setMultipartConfig(multipartConfigElement);
+		super.customizeRegistration(registration);
 	}
 	
 }

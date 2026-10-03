@@ -1,12 +1,12 @@
 package net.java_school.config;
 
 import java.util.Locale;
+import java.util.Properties;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -18,6 +18,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
@@ -29,7 +30,6 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 	"net.java_school.board",
 	"net.java_school.user"
 })
-@ImportResource("classpath:mvc.xml")
 public class WebConfig implements WebMvcConfigurer {
 	
 	@Override
@@ -92,7 +92,14 @@ public class WebConfig implements WebMvcConfigurer {
 		return new StandardServletMultipartResolver();
 	}
 	
-	
-
+	@Bean
+	public SimpleMappingExceptionResolver exceptionResolver() {
+		SimpleMappingExceptionResolver resolver = new SimpleMappingExceptionResolver();
+		
+		Properties exceptionMappings = new Properties();
+		exceptionMappings.put("java.lang.Exception", "500");
+		resolver.setExceptionMappings(exceptionMappings);
+		resolver.setDefaultErrorView("error");
+		return resolver;
+	}
 }
-
