@@ -1,0 +1,419 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+
+<article>
+
+<h1>자바스크립트 소개</h1>
+
+<p>
+자바스크립트는 웹 브라우저에서 실행되는 스크립트 언어다.<br />
+웹 브라우저에는 <a href="http://en.wikipedia.org/wiki/JavaScript_engine">자바스크립트 엔진</a>이 탑재되어 있다.<br />
+하지만 탑재된 엔진이 똑같지 않으므로 대표적인 웹 브라우저에서 똑같이 동작하도록 구현하기가 쉽지 않다.<br />
+엔진의 표준화가 그래서 중요한데, <a href="http://www.ecma-international.org">Ecma International</a>에서 자바스크립트 표준을 담당한다.<br />
+</p>
+
+<h3>자바스크립트 용도</h3>
+<ol>
+	<li>서버로 전송되기 전에 입력값이 유효한지 검사</li>
+	<li>HTML 엘리먼트에서 이벤트가 발생하면 동작하는 이벤트 핸들러 작성</li> 
+	<li>드롭 다운 메뉴와 같은 동적인 메뉴 생성</li>
+	<li>엘리먼트의 CSS 속성을 동적으로 변경</li>
+	<li>웹페이지 내용을 추가</li>
+</ol>
+
+<h3>1. 양식 입력값의 유효성 검사</h3>
+
+<p>
+signUp.html은 회원가입 양식 페이지다.<br />
+파라미터를 서버로 전송하기 전에 사용자가 입력한 값이 유효한지를 
+검사하는 예제이다.<br />
+예제에서 이메일과 모바일에 집중하기 위해서 그 외 입력 필드는 기본값을 주었다.<br />
+</p>
+
+<h6 class="src">signUp.html</h6>
+<pre class="prettyprint">
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset="UTF-8" /&gt;
+&lt;title&gt;자바스크립트 예제&lt;/title&gt;
+&lt;script type="text/javascript"&gt;
+function check() {
+	const form = document.getElementById("signUpForm");
+	let id = form.id.value;
+	id = removeSpace(id);
+	if (id.length == 0) {
+		alert("유효하지 않는 ID입니다.");
+		return false;
+	}
+	let pass = form.passwd.value;
+	pass = removeSpace(pass);
+	if (pass.length == 0) {
+		alert("유효하지 않는 패스워드입니다.");
+		return false;
+	}
+	let name = form.name.value;
+	name = removeSpace(name);
+	if (name.length == 0) {
+		alert("유효하지 않는 이름입니다.");
+		return false;
+	}
+	const email = form.email.value;
+	const emailCheck = emailCheck(email);
+	if (emailCheck == false) {
+		alert("유효하지 않는 이메일입니다.");
+		return false;
+	}
+	let mobile = form.mobile.value;
+	mobile = removeSpace(mobile);
+	if (mobile.length == 0) {
+		alert("유효하지 않는 모바일 번호입니다.");
+		return false;
+	}
+	const mobileCheck = beAllowStr(mobile,"0123456789-");
+	if (mobileCheck == false) {
+		alert("유효하지 않는 모바일 번호입니다.");
+		return false;
+	}
+	return true;
+}
+
+/*******************************************
+입력 :  문자열
+리턴값 : 입력문자열의 양 사이드의 공백을 제거한 문자열
+********************************************/
+function <strong>trim(str)</strong> {
+	//문자열 끝에 있는 공백문자를 제거한다.
+	for (let i = str.length - 1; i &gt;= 0; i--) {
+		if (str[i] == " ") {
+			str = str.substring(0, i);
+		} else {
+			break;
+		}
+	}
+	//문자열 앞에 있는 공백을 제거한다.
+	for (let i = 0; i &lt; str.length; i++) {
+		if (str[i] == " ") {
+			str = str.substring(i+1, str.length);
+		}	
+	}
+	return str;
+}
+
+/*******************************************
+입력 : 검사대상 문자열, 허용되는 문자열
+리턴값 : 검사대상 문자열이 허용되는 문자열로 구성되었다면 true,아니면 false
+********************************************/
+function beAllowStr(str, allowStr) {
+	for (let i = 0;i &lt; str.length; i++) {
+		let ch = str.charAt(i);
+		if (allowStr.indexOf(ch) &lt; 0) {
+			return false;
+		}
+	}
+	return true;
+}
+
+/**************************************
+입력 : 문자열
+리턴값 : 유효한 이메일이면 true 아니면 false
+***************************************/
+function <strong>emailCheck(email)</strong> {
+	const allowStr = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@.-_";
+	if (beAllowStr(email, allowStr) == false) {
+		return false;
+	}
+	let golbang = 0; // @ 문자의 갯수를 저장하기 위한 변수
+	let dot = 0;     // . 문자의 갯수를 저장하기 위한 변수
+	if (email.length &lt; 5) {
+		return false;
+	}
+	if (email.indexOf("@") == -1) {
+		return false;
+	}
+	if (email.indexOf(".") == -1) {
+		return false;
+	}
+	if (email.indexOf(" ") != -1) {
+		return false;
+	}
+	for (let i = 0;i &lt; email.length; i++) {
+		if (email.charAt(i) == "@") {
+			golbang++;
+		}
+		if (email.charAt(i) == ".") {
+			dot++;
+		}
+	}
+	if (golbang != 1 || dot &gt; 3) {
+		return false;
+	}
+	if (email.indexOf("@") &gt; email.indexOf(".")) {
+		return false;
+	}
+	if (email.indexOf("@") == 0  || email.indexOf(".") == email.length - 1) {
+		return false;
+	}
+	return true;
+}
+&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;회원가입&lt;/h1&gt;
+&lt;form id="signUpForm" action="signUp_proc.jsp" method="post" onsubmit="return check();"&gt;
+ID: &lt;input type="text" name="id" value="heist" /&gt;&lt;br /&gt;
+패스워드: &lt;input type="password" name="passwd" value="1440" /&gt;&lt;br /&gt;
+이름: &lt;input type="text" name="name" value="홍길동" /&gt;&lt;br /&gt;
+이메일: &lt;input type="text" name="email" /&gt;&lt;br /&gt;
+모바일: &lt;input type="text" name="mobile" /&gt;&lt;br /&gt;
+&lt;input type="submit" value="가입" /&gt;
+&lt;input type="reset" value="리셋" /&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+<p>
+<a href="<c:url value="/examples/signUp.html"/>">signUp.html 예제 실행</a><br />
+
+옛 방식의 자바스크립트 코드이다.<br />
+이메일이 유효한지 검사하는 함수는 정규 표현식을 이용하는 게 바람직하다.<br />
+정규 표현식은 곧 다룬다.<br />
+emailCheck()와 trim() 함수를 정규 표현식을 사용하도록 수정한다.<br />
+</p>
+ 
+<pre class="prettyprint" style="white-space: pre-wrap">
+function emailCheck(email) { 
+	const re = /^(([^&lt;&gt;()[\]\\.,;:\s@\"]+(\.[^&lt;&gt;()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	return re.test(email);
+}
+
+function trim(str) {
+	return str.replace(/(^\s*)|(\s*$)/gi, "");
+}
+</pre>
+
+모바일 번호의 유효성을 검사하는 함수도 새로 만든다.<br />
+
+<pre class="prettyprint">
+function mobileCheck(mobile) {
+	const re = /\d+-\d+-\d+/;
+	return re.test(mobile);
+}
+</pre>
+
+<p>
+위의 3개의 함수를 이용하여 유효성 검사를 하도록 회원가입 폼 페이지, signUp2.html를 작성한다.<br />
+
+<a href="<c:url value="/examples/signUp2.html"/>">signUp2.html 예제 실행</a><br />
+
+signUp.html과 signUp2.html에서 모바일 유효성 검사 기준에 차이가 있다.<br />
+signUp.html에서는 숫자와 -(대시)만으로 이루어진 문자열을 유효한 모바일 번호라고 판단했다.<br />
+signUp2.html에서 mobileCheck() 함수는 <strong>하나 이상의 숫자-하나 이상의 숫자-하나 이상의 숫자</strong>
+형식을 유효한 모바일 번호라고 판단한다.<br />
+위의 이메일 정규 표현식은, 적절한 정규 표현식을 제공하는 사이트가 여럿 있는데,
+그중 한 곳에서 참조했다.
+</p>
+
+<h3>2. 엘리먼트에서 이벤트가 발생하면 동작하는 이벤트 핸들러 작성</h3>
+
+<p>
+<input type="button" value="버튼" onclick="alert('버튼클릭!');" /> 이 버튼에 대한 코드는 다음과 같다.<br />
+</p>
+
+<pre class="prettyprint">
+&lt;input type="button" value="버튼" <strong>onclick="alert('버튼클릭!');"</strong> /&gt;
+</pre>
+
+<p>
+버튼을 클릭하면 alert() 함수가 실행된다.<br />
+여기서 alert() 대신에 사용자가 정의한 함수가 있다면, 그 함수를 <strong>이벤트 핸들러</strong>라 한다.<br />
+<br />
+링크나 서밋 버튼이나 리셋 버튼은 이벤트에 대해 기본 동작이 정해져 있다.<br />
+즉, 링크나 서밋 버튼이나 리셋 버튼은 자바스크립트 없어도 동작한다.<br />
+이벤트 핸들러가 굳이 필요 없다.<br />
+하지만 버튼의 경우 이벤트 핸들러를 연결하지 않으면 아무런 동작도 하지 않는다.<br />
+<br />
+회원가입 예제에서는 서밋 버튼의 기본 동작을 수행하기 전에 check() 함수가 동작하도록 했다.<br />
+
+&lt;form .. onsubmit="return check();"&gt;<br />
+
+이때 check() 함수는 불린 값을 리턴하도록 구현해야 한다.<br />
+true를 리턴하면 서버로 파라미터를 전송하는 기본 동작을 하고, false를 리턴하면 기본 동작을 못하게 되어, 결국 check() 함수 실행 후 서밋 버튼은 아무런 동작도 하지 않게 된다.<br />
+</p>
+
+<h3>3. 드롭 다운 메뉴와 같은 동적인 메뉴 생성</h3>
+
+<p>
+아래 사이트를 방문하면 페이지 하단 Example에서 dTree 자바스크립트 메뉴를 체험할 수 있다.<br />
+
+<a href="http://destroydrop.com/javascripts/tree/default.html">dTree</a><br />
+
+동적이라 함은 사용자에 반응하여 움직임을 뜻한다.<br />
+드림위버의 MM_으로 시작하는 함수가 자바스크립트로 동적 메뉴를 만들 때 사용하는 함수이다.<br />
+</p>
+
+<h3>4. 엘리먼트의 CSS 속성을 동적으로 변경</h3>
+
+<p>
+자바스크립트를 이용하면 특정 이벤트가 발생할 때 특정 엘리먼트의 CSS 속성을 변경할 수 있다.<br />
+signUp2.html 파일을 열다.<br /> 
+<em class="path">&lt;script type="text/javascript"&gt;</em> 아래에 다음 자바스크립트 함수를 추가한다.<br />
+다른 이름으로 저장하기 메뉴를 이용하여 signUp3.html라는 이름으로 저장한다.<br />
+</p>
+
+<pre class="prettyprint">
+function testCss() {
+	const inputs = document.getElementsByTagName("input");
+	for (let i = 0; i &lt; inputs.length; i++) {
+		inputs[i].style.background="yellow";
+	}
+}
+</pre>
+
+<p>
+body 엘리먼트에 onload 이벤트를 추가한다.<br />
+body 엘리먼트의 onload 이벤트는 문서의 모든 요소가 다운로드되고 사용 가능할 때 발생한다.<br />
+</p>
+
+<pre class="prettyprint">
+&lt;body onload="testCss()"&gt;
+</pre>
+
+<p>
+<a href="<c:url value="/examples/signUp3.html"/>">예제 실행</a><br />
+</p>
+
+<h3>5. 웹페이지 내용 추가</h3>
+
+<p>
+페이스북 댓글은 자바스크립트로 웹페이지 내용을 추가하는 좋은 예이다.<br />
+<img src="<c:url value="/resources/images/facebook-comments-examples.png"/>" alt="facebook comments">
+</p>
+
+
+<h1>자바와 다른 점</h1>
+
+<p>
+자바를 바탕으로 자바와 다른 자바스크립트의 특징을 살펴본다.<br />
+</p>
+
+<ol>
+	<li>변수 선언 시 변수 앞에 var를 붙인다.</li>
+	<li>기본 데이터 타입 중 숫자는 부동 소수이며 나눗셈의 결과는 부동 소수가 된다.</li>
+	<li>switch 문에서 switch()의 괄호 안에 문자가 들어가도 된다. (자바 7부터 된다.)</li>
+	<li>일반적인 배열(인덱스를 사용하여 요소를 접근)을 만드는 법</li>
+	<li>연관 배열은 key:value 의 배열로 인덱스로 요소에 접근할 수 없다. 자바에는 연관 배열이 없다.</li>
+	<li>for in 반복문</li>
+	<li>자바스크립트는 함수를 함수의 아규먼트로 전달할 수 있다.</li>
+</ol>
+
+<p>
+1,2는 이미 보았다.<br />
+</p>
+
+<h3>3. switch("문자열")</h3>
+<pre class="prettyprint script-result-display">
+const str = "A";
+
+switch (str) {
+case "A":
+	alert("A");
+	break;
+case "B":
+	alert("B");
+	break;
+case "C":
+	alert("C");
+	break;
+case "D":
+	alert("D");
+	break;
+default:
+	alert("F");
+}
+</pre>
+
+<h3>4. 배열 만들기</h3>
+
+<h4>[] 사용</h4>
+
+<p>
+[]을 사용하여 만든 배열은 인덱스를 사용하여 요소에 접근할 수 있다.
+</p>
+
+<pre class="prettyprint script-result-display">
+const arr = [1, 2, 3, 4, 5];
+let sum = 0;
+for (let i = 0; i &lt; arr.length; i++) {
+	sum = sum + arr[i];
+}
+alert('배열요소 합:' + sum);
+</pre>
+
+<h4>Array 객체 이용</h4>
+
+<p>
+Array 객체를 이용하여 만든 배열 역시 인덱스를 사용하여 요소에 접근할 수 있다.
+</p>
+
+<pre class="prettyprint script-result-display">
+const arr = new Array(1, 2, 3, 4, 5);
+let sum = 0;
+for (let i = 0; i &lt; arr.length; i++) {
+	sum = sum + arr[i];
+}
+alert('배열요소 합:' + sum);
+</pre>
+
+<h3>5. 연관 배열</h3>
+
+<p>
+연관 배열은 key:value의 배열로 {}를 사용하여 만든다.<br />
+연관 배열은 인덱스를 사용할 수 없다.<br />
+</p>
+
+<pre class="prettyprint script-result-display">
+const person = {"name":"홍길동", "job":"의적"};
+alert(person.name);
+alert(person["name"]);
+alert(person.job);
+alert(person["job"]);
+</pre>
+
+<h3>6. for in 반복문으로 연관 배열의 모든 요소에 접근할 수 있다.</h3>
+<pre class="prettyprint script-result-display">
+const person = {"name":"임꺽정", "job":"의적"};
+let result = "";
+for(let property in person) {
+	result += person[property];
+}
+alert(result);
+</pre>
+
+<h3>7. 자바스크립트는 함수를 함수의 아규먼트로 전달할 수 있다.</h3>
+<pre class="prettyprint script-result-display">
+function x(a, y) {
+    const ret = y(a);
+    alert(ret);
+}
+function z(a) {
+    return a * a
+}
+x(2, z);
+</pre>
+
+<span id="refer">참고</span>
+<ul id="references">
+	<li><a href="http://stackoverflow.com/questions/46155/validate-email-address-in-javascript">http://stackoverflow.com/questions/46155/validate-email-address-in-javascript</a></li>
+</ul>
+
+<div id="next-prev">
+	<ul>
+		<li>다음 : <a href="<c:url value="/javascript/datatype"/>">데이터 타입</a></li>
+		<li>이전 : <a href="<c:url value="/spring/bean-validation"/>">빈 검증</a></li>
+	</ul>
+</div>
+						
+</article>

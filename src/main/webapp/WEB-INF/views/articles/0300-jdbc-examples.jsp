@@ -1,0 +1,535 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+
+<article>
+
+<h1>JDBC 실습</h1>
+
+<h2>Create Table</h2>
+
+<p>
+GetEmp.java 파일 테스트가 성공했다면 이제부터 본격적인 JDBC 프로그래밍 예제를 실습하자.<br />
+준비한 예제는 명함관리 프로그램이다.<br />
+이번 장에서는 관련 테이블과 시퀀스를 JDBC를 이용해서 생성한다.<br />
+</p>
+
+<pre class="prettyprint">
+CREATE TABLE NAMECARD (
+    NO  NUMBER CONSTRAINT PK_NAMECARD PRIMARY KEY,  -- 고유번호
+    NAME    VARCHAR2(20) NOT NULL,    -- 이름
+    MOBILE  VARCHAR2(20) NOT NULL,    -- 손전화
+    EMAIL   VARCHAR2(40),   -- 이메일
+    COMPANY VARCHAR2(60)    -- 회사
+);
+ 
+CREATE SEQUENCE SEQ_NAMECARD_NO
+INCREMENT BY 1
+START WITH 1;
+</pre>
+
+<p>
+JDBC 프로그래밍 순서를 다시 한번 기억해 보자.<br />
+</p>
+
+<ol>
+	<li>JDBC 드라이버 로딩</li>
+	<li>Connection 맺기</li>
+	<li>SQL 실행</li>
+	<li>[SQL문이 select문이었다면 ResultSet을 이용한 처리]</li>
+	<li>자원 반환</li>
+</ol>
+
+<p>
+Package Explorer 뷰에서 jdbc 프로젝트에 패키지는 net.java_school.jdbc.test로 하여
+NamecardDDL.java 를 만든다. 모든 코드는 메인 메소드에 구현하도록 하겠다.<br />
+</p>
+
+<h3>1. JDBC 드라이버 로딩</h3>
+
+<p>
+Class.forName() 메소드를 이용해서 오라클 JDBC 드라이버의 시작 클래스를 메모리에 로딩한다.<br />
+forName() 메소드의 아규먼트인 문자열 oracle.jdbc.driver.OracleDriver 는 GetEmp.java 에서 참고한다.<br />
+
+<img src="<c:url value="/resources/images/load-oracle-jdbc-driver-01.png"/>" alt="JDBC 드라이버 로딩" style="width: 100%;" /><br />
+
+Class 클래스의 forName() 메소드는 ClassNotFoundException 을 핸들링 해주어야 하는 메소드이기 때문에 위와 같이 컴파일 에러가
+보인다.<br />
+이클립스의 코드 어시스트 도움을 받아서 (도움을 받을려면 마우스로 컴파일 에러가 발생하는 코드에 위치시키면 된다)
+그림과 같이 두번째 해결책을 선택하여 try ~ catch 문이 삽입되도록 한다.<br />
+
+<img src="<c:url value="/resources/images/load-oracle-jdbc-driver-02.png"/>" alt="JDBC 드라이버 로딩 ClassNotFoundException 익셉션 핸들링" style="width: 100%;" /><br />
+</p>
+
+<h3>2. Connection 맺기</h3>
+
+<p>
+커넥션은 DriverManager 클래스의 getConnection(,,) 메소드를 이용한다.<br />
+
+<img src="<c:url value="/resources/images/get-connection-03.png"/>" alt="커넥션 맺기" style="width: 100%;" /><br />
+
+Connection 과 DriverManager 는 JDBC 관련 인터페이스와 클래스로 java.sql 패키지에 있다.<br />
+위 그림과 같은 컴파일 에러는 코드 어시스트에서 첫번째 해결책을 선택하여 import 문장을 추가하도록 한다.<br />
+
+<img src="<c:url value="/resources/images/get-connection-04.png"/>" alt="커넥션 맺기 import java.sql.*; 추가" style="width: 100%;" /><br />
+
+DriverManager.getConnection(,,) 메소드의 첫번째 아규먼트는 url 값이다.<br />
+이 값 역시 GetEmp.java 소스를 참고한다.<br />
+두번째 아규먼트는 사용자 계정이고 세번째 아규먼트는 계정 비밀번호이다.<br />
+scott 계정에 테이블과 시퀀스를 만들기로 했으므로 두번째와 세번째 아규먼트는 각각 scott과 tiger이다.<br />
+
+<img src="<c:url value="/resources/images/get-connection-05.png"/>" alt="커넥션 맺기 DriverManager.getConnection(String,String,String) 메소드 완성 " style="width: 100%;" /><br />
+
+DriverManager.getConnection(,,) 메소드는 SQLException 익셉션을 핸들링 해주어야 한다.<br />
+위 그림처럼 코드 어시스트의 두번째 해결책을 선택해서 try ~ catch 문으로 익셉션을 핸들링 하도록 한다.<br />
+ 
+<img src="<c:url value="/resources/images/get-connection-06.png"/>" alt="커넥션 맺기 SQLException 익셉션 핸들링" style="width: 100%;" /><br />
+
+이후부터 나오는 메소드는 SQLException 익셉션을 핸들링 해주어야 하므로 이후부터는 코드는 try 블록에 구현한다.<br />
+그리고 Connection 타입의 con 변수 선언은 try 블록 밖에 두어야 한다.<br />
+왜냐하면 finally 블록에서 con.close(); 코드로 자원 반납 할 때 finally 블록도 con이 해석될 수 있는 영역이어야 하기 때문이다.<br />
+
+<img src="<c:url value="/resources/images/get-connection-07.png"/>" alt="커넥션 맺기 con 변수 선언을 try 블록밖으로" style="width: 100%;" /><br />
+</p>
+
+<h3>3. Statement 얻기</h3>
+
+<p>
+Statement 타입의 stmt 변수 선언 역시 나중에 자원 반납을 위한 코드구현을 고려해서 try 블록 밖에 둔다.<br />
+Statement 가 해석되지 않는 타입이라는 컴파일 에러를 만나면 코드 어시스트 도움을 받아<br />
+import java.sql.Statement; 문이 삽입되도록 한다.<br />
+
+<img src="<c:url value="/resources/images/createStatement-08.png"/>" alt="Statement 얻기, stmt 변수 선언을 try 블록밖으로, import java.sql.Statement; 추가" style="width: 100%;" /><br />
+</p>
+
+<h3>4. SQL 실행</h3>
+
+<p>
+다음은 SQL문을 실행하는 단계이다.<br />
+먼저 실행시킬 SQL문을 문자열로 만든다.<br />
+<em>아래 코드처럼 --로 시작하는 SQL 주석을 지운 SQL문으로 자바 문자열를 만든다.</em><br />
+</p>
+
+<pre class="prettyprint">
+Connection con = null;
+Statement stmt = null;
+<strong>String sql = null;</strong>
+try {
+	// Connection 맺기
+	con = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:XE", "scott", "tiger");
+	// Statement 얻기
+	stmt = con.createStatement();
+	sql = <strong>"CREATE TABLE NAMECARD ( " +
+		"NO  NUMBER CONSTRAINT PK_NAMECARD PRIMARY KEY, " +
+		"NAME    VARCHAR2(20) NOT NULL, " +
+		"MOBILE  VARCHAR2(20) NOT NULL, " +
+		"EMAIL   VARCHAR2(40), " +
+		"COMPANY VARCHAR2(60))"</strong>;
+	<strong>stmt.executeUpdate(sql);</strong>
+	
+} catch (SQLException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+}
+</pre>
+
+<p>
+Statement의 executeUpdate() 호출할 때 테이블을 생성하는 자바 문자열을 아규먼트로 전달해 SQL문을 실행한다.<br />
+이어서 시퀀스를 생성하는 SQL문을 자바 문자열로 만든다.<br />
+Statement의 executeUpdate() 호출할 때 시퀀스를 생성하는 자바 문자열을 아규먼트로 전달해 SQL문을 실행한다.<br />
+</p>
+
+<pre class="prettyprint">
+Connection con = null;
+Statement stmt = null;
+String sql = null;
+try {
+	// Connection 맺기
+	con = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:XE", "scott", "tiger");
+	// Statement 얻기
+	stmt = con.createStatement();
+	sql = "CREATE TABLE NAMECARD ( " +
+		"NO  NUMBER CONSTRAINT PK_NAMECARD PRIMARY KEY, " +
+		"NAME    VARCHAR2(20) NOT NULL, " +
+		"MOBILE  VARCHAR2(20) NOT NULL, " +
+		"EMAIL   VARCHAR2(40), " +
+		"COMPANY VARCHAR2(60))";
+	stmt.executeUpdate(sql);
+	sql = "<strong>CREATE SEQUENCE SEQ_NAMECARD_NO " +
+		"INCREMENT BY 1 " +
+		"START WITH 1</strong>";
+	<strong>stmt.executeUpdate(sql);</strong>
+} catch (SQLException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+}
+</pre>
+
+<h3>5. 자원 반납</h3>
+
+<p>
+finally 블록을 만들고 finally 블록안에 자원 반납 코드를 삽입한다.<br />
+생성되는 순서의 역순으로 자원을 반납해야 하므로 stmt.close(); 가 먼저 나와야 한다.<br />
+
+<img src="<c:url value="/resources/images/stmt-close-11.png"/>" alt="자원 반납 코드 SQLException 관련 컴파일 에러" style="width: 100%;" /><br />
+
+Statement의 close() 메소드는 SQLException 익셉션을 핸들링 해주어야 하는 메소드이므로 위처럼 처럼 컴파일 에러가 발생한다.<br />
+이때는 코드 어시스트 도움을 받아서 try ~ catch 블록이 삽입되도록 한다.<br />
+Connection의 close() 메소드도 마찬가지로 SQLException 익셉션을 핸들링 해주어야 하는 메소드이므로
+con.close(); 역시 try ~ catch 블록안에 위치하도록 코드 어시스트의 도움을 받는다.<br />
+
+<img src="<c:url value="/resources/images/close-12.png"/>" alt="자원 반납 코드 완성" style="width: 100%;" /><br />
+
+자원반납은 JDBC 코드에서 가장 중요하다. 꼭 잊지 말고 빠지지 않게 해야 한다.<br />
+NamecardDDL.java 를 실행한다.<br />
+익셉션이 발생하지 않으면<br />
+SQL*PLUS 로 scott 계정에 접속하여 테이블과 시퀀스가 생성되었는지 확인한다.<br />
+익셉션이 발생한다면 catch블록에 SQL문을 출력해본다.<br />
+JDBC의 단점 중 하나는 SQL 문을 자바 문자열로 바꿔야 한다는 데 있다.<br />
+SQL문을 자바문자열로 바꾸는 과정에서 띄어쓰기가 잘못되는 실수가 많이 나온다.<br />
+</p>
+
+<div class="cmd-header">&nbsp;</div>
+<pre class="cmd">
+Microsoft Windows XP [Version 5.1.2600]
+(C) Copyright 1985-2001 Microsoft Corp.
+
+C:\Documents and Settings\kim&gt;<span class="emphasis">sqlplus scott/tiger</span>
+
+SQL*Plus: Release 10.2.0.1.0 - Production on 토 1월 8 21:11:20 2011
+
+Copyright (c) 1982, 2005, Oracle.  All rights reserved.
+
+
+다음에 접속됨:
+Oracle Database 10g Release 10.2.0.1.0 - Production
+
+SQL&gt; <span class="emphasis">select tname from tab;</span>
+
+TNAME
+------------------------------------------------------------
+DEPT
+EMP
+BONUS
+SALGRADE
+<span class="emphasis">NAMECARD</span>
+
+5 개의 행이 선택되었습니다.
+
+SQL&gt; <span class="emphasis">select sequence_name from user_sequences;</span>
+
+SEQUENCE_NAME
+------------------------------------------------------------
+<span class="emphasis">SEQ_NAMECARD_NO</span>
+
+SQL&gt;
+</pre>	
+
+<p>
+NamecardDDL.java 를 다시 실행하면 익셉션이 발생한다.<br />
+똑같은 이름의 테이블과 시퀀스가 이미 scott 계정에 존재하기 때문이다.<br />
+JDBC로 테이블과 시퀀스를 생성하는 예제를 해보았다.<br /> 
+하지만 이와같이 JDBC를 이용한 DDL 문장을 실행하는 경우는 드물다.<br />
+</p>
+
+<dl class="note">
+<dt>executeUpdate</dt>
+<dd>
+Statement의 executeUpdate() 메소드는 create table.. 과 같은 DDL문이나
+DML문(INSERT, UPDATE, DELETE)을 실행할 때 사용한다.
+</dd>
+</dl>
+
+<h2>Insert</h2>
+
+<p class="floatstop">
+이번 장에서는 NAMECARD 테이블에 JDBC를 이용해서 데이터를 INSERT 시키는 예제를 구현한다.<br />
+다음 인서트 문을 JDBC를 사용해 실행하는 게 우리의 목표다.<br />
+</p>
+
+<pre class="prettyprint">
+INSERT INTO NAMECARD VALUES
+(
+  SEQ_NAMECARD_NO.NEXTVAL,
+  '홍길동',
+  '011-0000-0000',
+  'hongkildong@gmail.org',
+  '활빈당'
+);
+</pre>
+
+<p>
+아래 NamecardInsert.java 의 메인 메소드에 아래 JDBC프로그래밍 순서를 참고해서 작성한다.
+</p>
+
+<ol>
+	<li>JDBC 드라이버 로딩</li>
+	<li>Connection 맺기</li>
+	<li>SQL 실행</li>
+	<li>[SQL문이 select문이었다면 ResultSet을 이용한 처리]</li>
+	<li>자원 반환</li>
+</ol>
+
+<h6 class="src">NamecardInsert.java</h6>
+<pre class="prettyprint">
+package net.java_school.jdbc.test;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class NamecardInsert {
+	<strong>static final String URL = "jdbc:oracle:thin:@127.0.0.1:1521:XE";
+	static final String USER = "scott";
+	static final String PASS = "tiger";</strong>
+	
+	public static void main(String[] args) {
+		// JDBC 드라이버를 로딩한다.
+		try {
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		Connection con = null;
+		Statement stmt = null;
+		<strong>String sql = "INSERT INTO NAMECARD VALUES " +
+			"(SEQ_NAMECARD_NO.NEXTVAL," +
+			"'홍길동'," +
+			"'011-0000-0000'," +
+			"'hongkildong@gmail.org'," +
+			"'활빈당')";</strong>
+
+		try {
+			// Connection 맺기
+			con = DriverManager.getConnection(<strong>URL, USER, PASS</strong>);
+			// SQL 실행
+			stmt = con.createStatement();
+			stmt.executeUpdate(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			<strong>System.out.println(sql);</strong>
+		} finally {
+			try {
+				stmt.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+}
+</pre>
+
+<p>
+한번 실행하고 난 다음 데이터가 삽입되었는지 SQL*PLUS에서 확인한다.<br />
+</p>
+
+<h2>Select</h2>
+
+<p>
+이번 장에서는 NAMECARD 테이블의 레코드를 SELECT 하는 JDBC 예제를 구현한다.<br />
+아래 NamecardSelect.java의 메인 메소드에, 아래 SQL 문을 JDBC로 실행하는, 코드를 구현해 보자.
+</p>
+
+<pre class="prettyprint">
+SELECT NO,NAME,MOBILE,EMAIL,COMPANY 
+FROM NAMECARD
+ORDER BY NO DESC
+</pre>
+
+<ol>
+	<li>JDBC 드라이버 로딩</li>
+	<li>Connection 맺기</li>
+	<li>SQL 실행</li>
+	<li>[SQL문이 select문이었다면 ResultSet을 이용한 실행결과 처리]</li>
+	<li>자원 반환</li>
+</ol>
+
+<h6 class="src">NamecardSelect.java</h6>
+<pre class="prettyprint">
+package net.java_school.jdbc.test;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class NamecardSelect {
+	static final String URL = "jdbc:oracle:thin:@127.0.0.1:1521:XE";
+	static final String USER = "scott";
+	static final String PASS = "tiger";
+	
+	public static void main(String[] args) {
+		// JDBC 드라이버 로딩
+		try {
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Connection con = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		String sql = "SELECT NO,NAME,MOBILE,EMAIL,COMPANY " +
+			"FROM NAMECARD " +
+			"ORDER BY NO DESC";
+
+		try {
+			// Connection 맺기
+			con = DriverManager.getConnection(URL, USER, PASS);
+			// SQL 실행
+			stmt = con.createStatement();
+			rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				int no = rs.getInt("no");
+				String name = rs.getString("name");
+				String mobile = rs.getString("mobile");
+				String email = rs.getString("email");
+				String company = rs.getString("company");
+				System.out.println(no + "|" + name + "|" + mobile + "|" + email + "|" + company);
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println(sql);
+		} finally {
+			try {
+				rs.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				stmt.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+}
+</pre>
+
+<dl class="note">
+<dt>ResultSet 객체의 next() 메소드</dt>
+<dd>
+반환된 ResultSet이 내장하고 있는 커서는 처음에는 첫번째 레코드의 이전을 가르키고 있다.<br />
+이 커서를 한칸 움직이는 메소드가 ResultSet의 next() 메소드다.<br />
+따라서 반복문에서 next() 메소드를 이용하면 테이블에 있는 모든 레코드를 가져올 수 있다.<br />
+next() 메소드의 반환값은 이동한 커서의 위치에 레코드가 있으면 true, 없으면 false 를 반환한다.
+</dd>
+<dt>ResultSet 객체의 getXXX() 메소드</dt>
+<dd>
+실제로 getXXX() 라는 이름의 메소드는 아니다.<br />
+커서가 가르키고 있는 결과셋에서 첫번째 컬럼의 데이터 타입이 NUMBER라면 XXX 부분을 자바의 데이터 형중 하나인 int으로 바꾸어 주고,
+getInt(1)와 같이 아규먼트로 컬럼의 인덱스를 주면 해당 컬럼의 값을 자바의 int 타입 값으로 얻을 수 있다.<br />
+이때 아규먼트로 인덱스가 아닌 컬럼명을 문자열로 주어도 된다.<br />
+(우리의 예제는 그렇게 구현했다.)<br />
+아규먼트 타입이 int인 메소드가 성능은 좋다.
+하지만 유지보수엔 파라미터 타입이 String인 메소드가 좋다.<br />
+</dd>
+</dl>
+
+<h2>Update</h2>
+
+<p>
+이번 강좌에서는 JDBC를 이용해서 UPDATE 문을 실행하는 예제를 구현한다.<br />
+UpdateNamecard.java의 메인 메소드에 아래 SQL 문을 JDBC로 실행하는 코드를 작성한다.<br />
+</p>
+
+<pre class="prettyprint">
+UPDATE NAMECARD SET EMAIL ='gildonghong@gmail.org' WHERE NO = 1
+</pre>
+
+<p>
+JDBC 코드는 아래 순서를 참조한다.
+<p>
+
+<ol>
+	<li>JDBC 드라이버 로딩</li>
+	<li>Connection 맺기</li>
+	<li>SQL 실행</li>
+	<li>[SQL문이 select문이었다면 ResultSet을 이용한 실행결과 처리]</li>
+	<li>자원 반환</li>
+</ol>
+
+<h6 class="src">NamecardUpdate.java</h6>
+<pre class="prettyprint">
+package net.java_school.jdbc.test;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class NamecardUpdate {
+	static final String URL = "jdbc:oracle:thin:@127.0.0.1:1521:XE";
+	static final String USER = "scott";
+	static final String PASS = "tiger";
+	
+	public static void main(String[] args) {
+		// JDBC 드라이버 로딩
+		try {
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Connection con = null;
+		Statement stmt = null;
+		String sql = "UPDATE NAMECARD " +
+			"SET EMAIL ='gildonghong@gmail.org' " +
+			"WHERE NO = 1";
+		try {
+			// Connection 맺기
+			con = DriverManager.getConnection(URL, USER, PASS);
+			stmt = con.createStatement();
+			stmt.executeUpdate(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println(sql);
+		} finally {
+			try {
+				stmt.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+}
+</pre>
+
+<div id="next-prev">
+	<ul>
+		<li>다음 : <a href="<c:url value="/jdbc/preparedstatement"/>">PreparedStatement</a></li>
+		<li>이전 : <a href="<c:url value="/jdbc/jdbc-guide"/>">JDBC 프로그래밍 방법</a></li>
+	</ul>
+</div>
+
+</article>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>input values validation test 1</title>
+<script>
+function check() {
+	const form = document.getElementById("signUpForm");
+	let id = form.id.value;
+	id = removeSpace(id);
+	if (id.length === 0) {
+		alert("Invalid ID.");
+		return false;
+	}
+	let passwd = form.passwd.value;
+	passwd = removeSpace(passwd);
+	if (passwd.length === 0) {
+		alert("Invalid Password.");
+		return false;
+	}
+	let name = form.name.value;
+	name = removeSpace(name);
+	if (name.length === 0) {
+		alert("Invalid Name.");
+		return false;
+	}
+	const email = form.email.value;
+	const isEmail = emailCheck(email);
+	if (isEmail === false) {
+		alert("Invalid email.");
+		return false;
+	}
+	let mobile = form.mobile.value;
+	mobile = removeSpace(mobile);
+	if (mobile.length === 0) {
+		alert("Invalid mobile number.");
+		return false;
+	}
+	const isMobile = beAllowStr(mobile,"0123456789-");
+	if (isMobile === false) {
+		alert("Invalid mobile number");
+		return false;
+	}
+	
+	form.id.value = id;
+	form.passwd.value = passwd;
+	form.name.value = name;
+	form.email.value = email;
+	form.mobile.value = mobile;
+	
+	return false;//for test
+}
+
+function removeSpace(str) {
+	let i = 0;
+	while (i < str.length) {
+		if (str[i] === ' ') {
+			str = str.substring(0,i) + str.substring(i+1,str.length);
+			continue;
+		}
+		i++;
+	}
+	return str;
+}
+
+function beAllowStr(str, allowStr) {
+	for (let i = 0;i < str.length; i++) {
+		let ch = str.charAt(i);
+		if (allowStr.indexOf(ch) < 0) {
+			return false;
+		}
+	}
+	return true;
+}
+
+function emailCheck(email) {
+	if (beAllowStr(email,"1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@.-_") == false) {
+		return false;
+	}
+	let golbang = 0;
+	let dot = 0;
+	if (email.length < 5) {
+		return false;
+	}
+	if (email.indexOf("@") == -1) {
+		return false;
+	}
+	if (email.indexOf(".") == -1) {
+		return false;
+	}
+	if (email.indexOf(" ") != -1) {
+		return false;
+	}
+	for (let i = 0;i < email.length; i++) {
+		if (email.charAt(i) == "@") {
+			golbang++;
+		}
+		if (email.charAt(i) == ".") {
+			dot++;
+		}
+	}
+	if (golbang != 1 || dot > 3) {
+		return false;
+	}
+	if (email.indexOf("@") > email.indexOf(".")) {
+		return false;
+	}
+	if (email.indexOf("@") == 0  || email.indexOf(".") == email.length - 1) {
+		return false;
+	}
+	return true;
+}
+</script>
+</head>
+<body>
+<h1>Sign Up</h1>
+<form id="signUpForm" name="signUpForm" method="post" onsubmit="return check();">
+ID : <input type="text" name="id" value="   h  e i s  t   " /><br />
+Password : <input type="password" name="passwd" value="1111" /><br />
+Name: <input type="text" name="name" value="   J  o h n  D   o  e   "  /><br />
+Email : <input type="text" name="email" value="alexa@earth.net" /><br />
+Mobile : <input type="text" name="mobile" value="12345678" /><br />
+<input type="submit" value="Submit" />
+<input type="reset" value="Reset" />
+</form>
+</body>
+</html>
