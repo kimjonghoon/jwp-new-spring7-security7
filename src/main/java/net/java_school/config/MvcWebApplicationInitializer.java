@@ -16,7 +16,7 @@ public class MvcWebApplicationInitializer extends AbstractAnnotationConfigDispat
 
 	@Override
 	protected Class<?>[] getServletConfigClasses() {
-		return new Class[] {SecurityConfig.class, WebConfig.class, DataConfig.class};
+		return new Class[] {SecurityConfig.class, MvcConfig.class, DataConfig.class};
 	}
 
 	@Override
