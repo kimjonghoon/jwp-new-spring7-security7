@@ -91,15 +91,19 @@ public class MvcConfig implements WebMvcConfigurer {
 	public MultipartResolver multipartResolver() {
 		return new StandardServletMultipartResolver();
 	}
-	
+
 	@Bean
-	public SimpleMappingExceptionResolver exceptionResolver() {
+	public SimpleMappingExceptionResolver exceptionMappingResolver() {
 		SimpleMappingExceptionResolver resolver = new SimpleMappingExceptionResolver();
 		
-		Properties exceptionMappings = new Properties();
-		exceptionMappings.put("java.lang.Exception", "500");
-		resolver.setExceptionMappings(exceptionMappings);
-		resolver.setDefaultErrorView("error");
-		return resolver;
+		Properties mappings = new Properties();
+		//test
+		mappings.put("net.java_school.exception.AuthenticationException", "error");
+		
+		resolver.setExceptionMappings(mappings);
+	   resolver.setDefaultErrorView("error");
+	   
+	   return resolver;
 	}
+	
 }

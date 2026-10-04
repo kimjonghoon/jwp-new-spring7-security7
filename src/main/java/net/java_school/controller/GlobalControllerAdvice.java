@@ -84,7 +84,7 @@ public class GlobalControllerAdvice {
 	//https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator
 	@ModelAttribute("hibernateValidatorVer")
 	public String getHivernateValidatorVersion() {
-		return "9.1.3.Final";
+		return "9.1.4.Final";
 	}
 	//https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf-spring6
 	@ModelAttribute("thymeleafSpring6Ver")
@@ -104,6 +104,6 @@ public class GlobalControllerAdvice {
 	//https://mvnrepository.com/artifact/tools.jackson.core/jackson-databind
 	@ModelAttribute("jacksonDatabindVer")
 	public String getJacksonDatabindVersion() {
-		return "3.2.2";
+		return "3.2.3";
 	}
 }
