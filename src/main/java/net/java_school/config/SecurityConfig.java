@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import net.java_school.exception.MyAccessDeniedHandler;
 
@@ -43,6 +44,11 @@ public class SecurityConfig {
 	@Bean
 	public AccessDeniedHandler accessDeniedHandler() {
 		return new MyAccessDeniedHandler();
+	}
+
+	@Bean
+	public HttpSessionEventPublisher httpSessionEventPublisher() {
+		return new HttpSessionEventPublisher();
 	}
 	
 	@Bean
@@ -90,6 +96,13 @@ public class SecurityConfig {
 			
 			.exceptionHandling(exceptionHandling -> exceptionHandling
 					.accessDeniedHandler(accessDeniedHandler())
+			)
+			
+			.sessionManagement(session -> session
+					.sessionConcurrency(concurrency -> concurrency
+							.maximumSessions(1)
+							.maxSessionsPreventsLogin(true)
+					)
 			);
 			
 		return http.build();
