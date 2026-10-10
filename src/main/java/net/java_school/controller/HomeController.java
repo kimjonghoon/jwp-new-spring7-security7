@@ -16,5 +16,13 @@ public class HomeController {
 	public String error403() {
 		return "error-403";
 	}
-	
+
+	@GetMapping("/check-thread")
+	public String checkThread() {
+		boolean isVirtual = Thread.currentThread().isVirtual();
+		String threadName = Thread.currentThread().toString();
+    
+		System.out.printf("Is Virtual Thread? %b | Thread Info: %s", isVirtual, threadName);
+		return "index";
+	}
 }
