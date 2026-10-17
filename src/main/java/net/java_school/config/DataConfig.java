@@ -43,7 +43,7 @@ public class DataConfig {
 	public SqlSessionFactory sqlSessionFactory() throws Exception {
 		SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
 		factoryBean.setDataSource(dataSource());
-		factoryBean.setConfigLocation(applicationContext.getResource("classpath:net/java_school/mybatis/Configuration.xml"));
+		factoryBean.setConfigLocation(applicationContext.getResource("classpath:net/java_school/mybatis/mybatis-config.xml"));
 		return factoryBean.getObject();
 	}
 	

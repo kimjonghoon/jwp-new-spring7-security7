@@ -1947,7 +1947,7 @@ src/main/resources에 net.java_school.mybatis 패키지를 만들고, 이 패키
 설정 파일을 소스 디렉터리에 만들어도 클래스 패스에 복사되지 않기 때문이다. 
 </p>
 
-<h6 class="src">Configuration.xml</h6>
+<h6 class="src">mybatis-config.xml</h6>
 <pre class="prettyprint">
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;!DOCTYPE configuration 
@@ -1977,7 +1977,7 @@ src/main/resources에 net.java_school.mybatis 패키지를 만들고, 이 패키
 </pre>
 
 <p>
-Configuration.xml와 같은 위치에 UserMapper.xml 파일을 만든다.
+mybatis-config.xml 파일에서 설정한 대로 UserMapper.xml 파일을 src/main/resources/net/java_school/mapper 디렉터리에 생성한다.
 UserMapper.java의 메소드 이름과 id 값이 일치해야 한다.
 </p>
 
@@ -2344,7 +2344,7 @@ public class JavascriptController {
     
   &lt;bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean"&gt;
     &lt;property name="dataSource" ref="dataSource" /&gt;
-    &lt;property name="configLocation" value="classpath:net/java_school/mybatis/Configuration.xml" /&gt;
+    &lt;property name="configLocation" value="classpath:net/java_school/mybatis/mybatis-config.xml" /&gt;
   &lt;/bean&gt;
 
   &lt;bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"&gt;
@@ -2483,7 +2483,7 @@ dataSource 정의는 스프링 JDBC를 사용하든지 마이바티스를 사용
 <h3>게시판</h3>
 
 <p>
-Configuration.xml의 설정대로, BoardMapper.xml 파일을 UserMapper.xml와 같은 위치에 만든다.
+BoardMapper.xml 파일을 UserMapper.xml와 같은 위치에 만든다.
 </p>
 
 <h6 class="src">BoardMapper.xml</h6>
