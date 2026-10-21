@@ -9,7 +9,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="net.java_school" level="DEBUG">
+        <Logger name="net.java_school" level="DEBUG" additivity="false">
             <AppenderRef ref="File" />
         </Logger>
         <Root level="INFO">
