@@ -67,9 +67,9 @@ $(document).ready(function () {
 	
 	$('#file-list a.download').click(function (e) {
 		e.preventDefault();
-		const filename = this.title;
+		//const filename = this.title;
 		const fileno = $(this).attr('href');
-		$('#downForm input[name*=filename]').val(filename);
+		//$('#downForm input[name*=filename]').val(filename);
 		$('#downForm input[name*=fileno]').val(fileno);
 		$('#downForm').submit();
 	});
@@ -722,7 +722,6 @@ pageContext.setAttribute("writeDate", df.format((java.util.Date) writeDate));
     </form:form>
     <c:url var="dataUrl" value="/data"/>
     <form:form id="downForm" action="${dataUrl}" method="get">
-        <input type="hidden" name="filename" />
         <input type="hidden" name="fileno" />
     </form:form>
     <form:form id="modifyCommentForm" method="put">
