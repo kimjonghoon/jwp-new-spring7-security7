@@ -30,7 +30,7 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-bom</artifactId>
-			<version>7.1.0</version>
+			<version>7.1.2</version>
 			<type>pom</type>
 			<scope>import</scope>		    
 		</dependency>
@@ -72,13 +72,13 @@
 	<dependency>
 		<groupId>org.hibernate.validator</groupId>
 		<artifactId>hibernate-validator</artifactId>
-		<version>9.1.4.Final</version>
+		<version>9.1.5.Final</version>
 	</dependency>
 	<!-- https://mvnrepository.com/artifact/com.mysql/mysql-connector-j -->
 	<dependency>
 		<groupId>com.mysql</groupId>
 		<artifactId>mysql-connector-j</artifactId>
-		<version>26.7.0</version>
+		<version>26.10.0</version>
 	</dependency>
 	<!-- https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc11 -->
 	<dependency>
@@ -96,7 +96,7 @@
 	<dependency>
 		<groupId>org.mybatis</groupId>
 		<artifactId>mybatis</artifactId>
-		<version>3.5.19</version>
+		<version>3.6.0</version>
 	</dependency>
 	<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-dbcp2 -->
 	<dependency>

@@ -262,10 +262,10 @@ public class BbsController extends Paginator {
 			file.setEmail(principal.getName());
 			boardService.addAttachFile(file);
 
-			File dir = new File(WebContants.UPLOAD_PATH.value() + principal.getName());
+			File dir = new File(WebContants.UPLOAD_PATH + principal.getName());
 			if (!dir.exists()) dir.mkdirs();
 
-			Path path = Paths.get(WebContants.UPLOAD_PATH.value() + principal.getName());
+			Path path = Paths.get(WebContants.UPLOAD_PATH + principal.getName());
 
 			try (InputStream inputStream = attachFile.getInputStream()) {
 				Files.copy(inputStream, path.resolve(attachFile.getOriginalFilename()),
@@ -333,10 +333,10 @@ public class BbsController extends Paginator {
 			file.setEmail(article.getEmail());
 			boardService.addAttachFile(file);
 
-			File dir = new File(WebContants.UPLOAD_PATH.value() + email);
+			File dir = new File(WebContants.UPLOAD_PATH + email);
 			if (!dir.exists()) dir.mkdirs();
 
-			Path path = Paths.get(WebContants.UPLOAD_PATH.value() + email);
+			Path path = Paths.get(WebContants.UPLOAD_PATH + email);
 
 			try (InputStream inputStream = attachFile.getInputStream()) {
 				Files.copy(inputStream, path.resolve(attachFile.getOriginalFilename()),
