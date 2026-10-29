@@ -17,7 +17,7 @@ public class GlobalControllerAdvice {
 	//https://mvnrepository.com/artifact/org.springframework.security/spring-security-bom
 	@ModelAttribute("securityVer")
 	public String getSecurityVersion() {
-		return "7.1.1";
+		return "7.1.2";
 	}
 	//https://mvnrepository.com/artifact/joda-time/joda-time
 	@ModelAttribute("jodaTimeVer")

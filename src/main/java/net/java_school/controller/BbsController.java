@@ -41,7 +41,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.validation.Valid;
 
 @Controller
-@RequestMapping("bbs")
+@RequestMapping("/bbs")
 public class BbsController extends Paginator {
 
 	@Autowired
@@ -60,7 +60,7 @@ public class BbsController extends Paginator {
 		}
 	}
 
-	@GetMapping("{boardCd}")
+	@GetMapping("/{boardCd}")
 	public String list (
 			@CookieValue(name="numPerPage", defaultValue="10") Integer recordsPerPage,
 			@PathVariable(name="boardCd") String boardCd,
@@ -111,7 +111,7 @@ public class BbsController extends Paginator {
 		return "bbs/list";
 	}
 
-	@GetMapping("{boardCd}/{articleNo}")
+	@GetMapping("/{boardCd}/{articleNo}")
 	public String view(
 			@CookieValue(name="numPerPage", defaultValue="10") Integer recordsPerPage,
 			@PathVariable(name="boardCd") String boardCd,
@@ -210,7 +210,7 @@ public class BbsController extends Paginator {
 		return "bbs/view";
 	}
 
-	@GetMapping("{boardCd}/new")
+	@GetMapping("/{boardCd}/new")
 	public String writeForm(
 			@PathVariable(name="boardCd") String boardCd,
 			Locale locale,
@@ -228,7 +228,7 @@ public class BbsController extends Paginator {
 		return "bbs/write";
 	}
 
-	@PostMapping("{boardCd}")
+	@PostMapping("/{boardCd}")
 	public String write(
 			@Valid Article article,
 			BindingResult bindingResult,
@@ -276,7 +276,7 @@ public class BbsController extends Paginator {
 		return "redirect:/bbs/" + article.getBoardCd() + "?page=1";
 	}
 
-	@GetMapping("{boardCd}/{articleNo}/edit")
+	@GetMapping("/{boardCd}/{articleNo}/edit")
 	public String modifyForm(
 			@PathVariable(name="boardCd") String boardCd,
 			@PathVariable(name="articleNo") Integer articleNo,
@@ -298,7 +298,7 @@ public class BbsController extends Paginator {
 		return "bbs/modify";
 	}
 
-	@PostMapping("{boardCd}/{articleNo}")
+	@PostMapping("/{boardCd}/{articleNo}")
 	public String modify(@Valid Article article,
 			BindingResult bindingResult,
 			@PathVariable(name="boardCd") String boardCd,
@@ -368,7 +368,7 @@ public class BbsController extends Paginator {
 		return "redirect:/bbs/" + boardCd;
 	}
 
-	@DeleteMapping("deleteAttachFile")
+	@DeleteMapping("/deleteAttachFile")
 	public String deleteAttachFile(
 			@RequestParam(name="attachFileNo") Integer attachFileNo,
 			@RequestParam(name="articleNo") Integer articleNo,
