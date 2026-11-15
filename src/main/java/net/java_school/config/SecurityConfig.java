@@ -46,10 +46,12 @@ public class SecurityConfig {
 		return new MyAccessDeniedHandler();
 	}
 
+/*
 	@Bean
 	public HttpSessionEventPublisher httpSessionEventPublisher() {
 		return new HttpSessionEventPublisher();
 	}
+*/	
 	
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
