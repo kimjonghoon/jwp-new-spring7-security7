@@ -12,7 +12,7 @@ public class GlobalControllerAdvice {
 	//https://mvnrepository.com/artifact/org.springframework/spring-framework-bom
 	@ModelAttribute("springVer")
 	public String getSpringVersion() {
-		return "7.0.9";
+		return "7.0.8";
 	}
 	//https://mvnrepository.com/artifact/org.springframework.security/spring-security-bom
 	@ModelAttribute("securityVer")
@@ -22,27 +22,27 @@ public class GlobalControllerAdvice {
 	//https://mvnrepository.com/artifact/joda-time/joda-time
 	@ModelAttribute("jodaTimeVer")
 	public String getJodaTimeVersion() {
-		return "2.14.3";
+		return "2.15.1";
 	}
 	//https://mvnrepository.com/artifact/org.slf4j/slf4j-api
 	@ModelAttribute("slf4jVer")
 	public String getSlf4jVersion() {
-		return "2.0.19";
+		return "2.0.20";
 	}
 	//https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
 	@ModelAttribute("logbackVer")
 	public String getLogbackVersion() {
-		return "1.6.3";
+		return "1.6.6";
 	}
 	//https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc11
 	@ModelAttribute("ojdbc11Ver")
 	public String getOjdbc11Version() {
-		return "23.26.3.0.0";
+		return "23.26.4.0.0";
 	}
 	//https://mvnrepository.com/artifact/org.aspectj/aspectjweaver
 	@ModelAttribute("aspectjweaverVer")
 	public String getAspectjweaverVersion() {
-		return "1.9.25.1";
+		return "1.9.27";
 	}
 	@ModelAttribute("servletVer")
 	public String getServletVersion() {
@@ -84,7 +84,7 @@ public class GlobalControllerAdvice {
 	//https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator
 	@ModelAttribute("hibernateValidatorVer")
 	public String getHivernateValidatorVersion() {
-		return "9.1.5.Final";
+		return "9.1.6.Final";
 	}
 	//https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf-spring6
 	@ModelAttribute("thymeleafSpring6Ver")
@@ -104,6 +104,6 @@ public class GlobalControllerAdvice {
 	//https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
 	@ModelAttribute("jacksonDatabindVer")
 	public String getJacksonDatabindVersion() {
-		return "2.22.4";
+		return "2.23.0";
 	}
 }

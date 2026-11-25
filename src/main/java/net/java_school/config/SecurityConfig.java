@@ -24,8 +24,11 @@ import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
 @EnableMethodSecurity
 public class SecurityConfig {
 	
-	@Autowired
 	private DataSource dataSource;
+
+	public SecurityConfig(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
 	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
