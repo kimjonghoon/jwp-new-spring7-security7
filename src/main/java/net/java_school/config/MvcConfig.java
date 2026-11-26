@@ -28,7 +28,8 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @ComponentScan({
 	"net.java_school.controller",
 	"net.java_school.board",
-	"net.java_school.user"
+	"net.java_school.user",
+	"net.java_school.commons.paging"
 })
 public class MvcConfig implements WebMvcConfigurer {
 	

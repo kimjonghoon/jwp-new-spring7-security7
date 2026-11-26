@@ -115,7 +115,7 @@
         ORDER BY name ASC
         ) a
         )
-        WHERE R BETWEEN #{startRecord} AND #{endRecord}
+        WHERE R BETWEEN #{start} AND #{end}
     </select>
 <!-- Oracle end -->
 </mapper>

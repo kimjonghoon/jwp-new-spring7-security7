@@ -1,6 +1,5 @@
 package net.java_school.config;
 
-import java.time.Duration;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -34,13 +33,13 @@ public class DataConfig {
 		dataSource.setUrl("jdbc:oracle:thin:@localhost:1521:XE");
 		dataSource.setUsername("java");
 		dataSource.setPassword("school");
-		
+		/*
 		dataSource.setMaxTotal(100);
 		dataSource.setMaxWait(Duration.ofMillis(1000));
 		dataSource.setPoolPreparedStatements(true);
 		dataSource.setDefaultAutoCommit(true);
 		dataSource.setValidationQuery("SELECT 1 FROM DUAL");
-		
+		*/
 		return dataSource;
 	}
 	
@@ -48,17 +47,17 @@ public class DataConfig {
 	@Profile("mysql")
 	public DataSource mysqlDataSource() {
 		BasicDataSource dataSource = new BasicDataSource();
-		dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+		dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 		dataSource.setUrl("jdbc:mysql://localhost:3306/javaskool");
 		dataSource.setUsername("java");
 		dataSource.setPassword("school");
-		
+		/*
 		dataSource.setMaxTotal(100);
 		dataSource.setMaxWait(Duration.ofMillis(1000));
 		dataSource.setPoolPreparedStatements(true);
 		dataSource.setDefaultAutoCommit(true);
 		dataSource.setValidationQuery("SELECT 1");
-		
+		*/
 		return dataSource;
 	}
 
@@ -82,7 +81,5 @@ public class DataConfig {
 		databaseIdProvider.setProperties(properties);
 		
 		return databaseIdProvider;
-
 	}
-	
 }

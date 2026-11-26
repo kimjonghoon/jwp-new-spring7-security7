@@ -23,8 +23,8 @@ import net.java_school.board.BoardService;
 import net.java_school.commons.PagingNumbers;
 import net.java_school.commons.Paginator;
 import net.java_school.commons.WebContants;
+import net.java_school.commons.paging.PagingParameterBuilder;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -44,8 +44,13 @@ import jakarta.validation.Valid;
 @RequestMapping("/bbs")
 public class BbsController extends Paginator {
 
-	@Autowired
-	private BoardService boardService;
+	private final BoardService boardService;
+	private final PagingParameterBuilder pagingParameterBuilder;
+	
+	public BbsController(BoardService boardService, PagingParameterBuilder pagingParameterBuilder) {
+		this.boardService = boardService;
+		this.pagingParameterBuilder =  pagingParameterBuilder;
+	}
 
 	private String getBoardName(String boardCd, String lang) {
 		Board board = boardService.getBoard(boardCd);
@@ -76,25 +81,9 @@ public class BbsController extends Paginator {
 		PagingNumbers pagingNumbers = this.getPagingNumbers(totalRecords, page, recordsPerPage, pagesPerGroup);
 
 		HashMap<String, String> map = new HashMap<>();
-
 		map.put("boardCd", boardCd);
 		map.put("search", search);
-
-		//Oracle start
-		Integer startRecord = (page - 1) * recordsPerPage + 1;
-		Integer endRecord = page * recordsPerPage;
-		map.put("start", startRecord.toString());
-		map.put("end", endRecord.toString());
-		//Oracle end
-
-		/*		
-		//MySQL and MariaDB start
-		Integer offset = (page - 1) * recordsPerPage;
-		Integer rowCount = recordsPerPage;
-		map.put("offset", offset.toString());
-		map.put("rowCount", rowCount.toString());
-		//MySQL and MariaDB end
-		*/
+		pagingParameterBuilder.applyPaging(map, page, recordsPerPage);
 		
 		List<Article> list = boardService.getArticleList(map);
 
@@ -180,22 +169,7 @@ public class BbsController extends Paginator {
 		HashMap<String, String> map = new HashMap<>();
 		map.put("boardCd", boardCd);
 		map.put("search", search);
-
-		//Oracle start
-		Integer startRecord = (page - 1) * recordsPerPage + 1;
-		Integer endRecord = page * recordsPerPage;
-		map.put("start", startRecord.toString());
-		map.put("end", endRecord.toString());
-		//Oracle end
-		
-		/*
-		//MySQL and MariaDB start
-		Integer offset = (page - 1) * recordsPerPage;
-		Integer rowCount = recordsPerPage;
-		map.put("offset", offset.toString());
-		map.put("rowCount", rowCount.toString());
-		//MySQL and MariaDB end
-		*/
+		pagingParameterBuilder.applyPaging(map, page, recordsPerPage);
 		
 		List<Article> list = boardService.getArticleList(map);
 

@@ -9,10 +9,10 @@ import net.java_school.board.BoardService;
 import net.java_school.commons.PagingNumbers;
 import net.java_school.commons.Paginator;
 import net.java_school.commons.WebContants;
+import net.java_school.commons.paging.PagingParameterBuilder;
 import net.java_school.user.User;
 import net.java_school.user.UserService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,12 +25,16 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 @RequestMapping("/admin")
 public class AdminController extends Paginator {
 
-	@Autowired
-	private UserService userService;
-
-	@Autowired
-	private BoardService boardService;
-
+	private final UserService userService;
+	private final BoardService boardService;
+	private final PagingParameterBuilder pagingParameterBuilder;
+	
+	public AdminController(UserService userService, BoardService boardService, PagingParameterBuilder pagingParameterBuilder) {
+			this.userService =  userService;
+			this.boardService = boardService;
+			this.pagingParameterBuilder = pagingParameterBuilder;
+	}
+	
 	@GetMapping
 	public String index (
 			@RequestParam(name="page", defaultValue="1") Integer page, 
@@ -46,24 +50,7 @@ public class AdminController extends Paginator {
 		PagingNumbers pagingNumbers = this.getPagingNumbers(totalRecords, page, recordsPerPage, pagesPerGroup);
 
 		HashMap<String, String> map = new HashMap<>();
-
-		//Oracle start
-		Integer startRecord = (page - 1) * recordsPerPage + 1;
-		Integer endRecord = page * recordsPerPage;
-		map.put("search", search);
-		map.put("startRecord", startRecord.toString());
-		map.put("endRecord", endRecord.toString());
-		//Oracle end
-
-/*
-		//MySQL and MariaDB start
-		Integer offset = (page - 1) * numPerPage;
-		Integer rowCount = numPerPage;
-		map.put("search", search);
-		map.put("offset", offset.toString());
-		map.put("rowCount", rowCount.toString());
-		//MySQL and MariaDB end
-*/
+		pagingParameterBuilder.applyPaging(map, page, recordsPerPage);
 		List<User> list = userService.getAllUser(map);
 
 		model.addAttribute("list", list);
