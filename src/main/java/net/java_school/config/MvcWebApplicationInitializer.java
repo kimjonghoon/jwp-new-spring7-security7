@@ -2,6 +2,8 @@ package net.java_school.config;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRegistration.Dynamic;
 
 import org.springframework.web.filter.HiddenHttpMethodFilter;
@@ -36,9 +38,14 @@ public class MvcWebApplicationInitializer extends AbstractAnnotationConfigDispat
 		long maxRequestSize = 1048576;
 		int fileSizeThreshold = 524288;
 		MultipartConfigElement multipartConfigElement = 
-				new MultipartConfigElement(null, maxFileSize, maxRequestSize, fileSizeThreshold);
+			new MultipartConfigElement(null, maxFileSize, maxRequestSize, fileSizeThreshold);
 		registration.setMultipartConfig(multipartConfigElement);
 		super.customizeRegistration(registration);
 	}
 	
+	@Override
+	public void onStartup(ServletContext servletContext) throws ServletException {
+		servletContext.setInitParameter("spring.profiles.default", "oracle");
+		super.onStartup(servletContext);
+	}
 }

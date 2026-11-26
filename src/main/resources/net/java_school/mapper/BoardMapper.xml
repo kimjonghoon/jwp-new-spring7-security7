@@ -86,13 +86,12 @@
 
     <select id="selectCountOfViews" parameterType="int" resultType="int">
         SELECT count(*) FROM views 
-        WHERE 
-                articleNo = #{articleNo}
+        WHERE articleNo = #{articleNo}
     </select>
 
-    <!-- MySQL and MariaDB start -->
-<!--    
-    <select id="selectListOfComments" parameterType="int" resultType="Comment">
+<!--  MySQL or MariaDB start-->
+<!-- 
+    <select id="selectListOfComments" parameterType="int" resultType="Comment" databaseId="mysql">
         SELECT 
             commentno, 
             articleno, 
@@ -104,12 +103,14 @@
         WHERE 
             articleno = #{articleNo}
         ORDER BY commentno DESC
-    </select>	
-    <insert id="insertComment" parameterType="Comment">
+    </select>
+    	
+    <insert id="insertComment" parameterType="Comment" databaseId="mysql">
         INSERT INTO comments (articleno, email, memo, regdate)
         VALUES (#{articleNo}, #{email}, #{memo}, now())
-    </insert>	
-    <select id="selectNextOne" parameterType="hashmap" resultType="Article">
+    </insert>
+    	
+    <select id="selectNextOne" parameterType="hashmap" resultType="Article" databaseId="mysql">
         SELECT articleno, title 
         FROM article 
         WHERE 
@@ -121,7 +122,8 @@
         ORDER BY articleno
         LIMIT 1
     </select>
-    <select id="selectPrevOne" parameterType="hashmap" resultType="Article">
+    
+    <select id="selectPrevOne" parameterType="hashmap" resultType="Article" databaseId="mysql">
         SELECT articleno, title 
         FROM article 
         WHERE 
@@ -132,8 +134,9 @@
         </if> 
         ORDER BY articleno DESC
         LIMIT 1
-    </select>	
-    <select id="selectOne" parameterType="int" resultType="Article">
+    </select>
+    	
+    <select id="selectOne" parameterType="int" resultType="Article" databaseId="mysql">
         SELECT 
             a.articleno,
             title,
@@ -145,21 +148,25 @@
             article as a left join member as m on a.email = m.email
         WHERE 
             a.articleno = #{articleNo}
-    </select>	
-    <insert id="insertOneViews" parameterType="hashmap">
+    </select>
+    	
+    <insert id="insertOneViews" parameterType="hashmap" databaseId="mysql">
         INSERT INTO views (articleNo, ip, yearMonthDayHour) values (#{articleNo}, #{ip}, #{yearMonthDayHour})
-    </insert>	
-    <insert id="insertAttachFile" parameterType="AttachFile">
+    </insert>
+    	
+    <insert id="insertAttachFile" parameterType="AttachFile" databaseId="mysql">
         INSERT INTO attachfile (filename, filetype, filesize, articleno, email)
         VALUES
         (#{filename}, #{filetype}, #{filesize}, #{articleNo}, #{email})
     </insert>
-    <insert id="insert" parameterType="Article" useGeneratedKeys="true" keyProperty="articleNo">
+    
+    <insert id="insert" parameterType="Article" useGeneratedKeys="true" keyProperty="articleNo" databaseId="mysql">
         INSERT INTO article (boardcd, title, content, email, regdate)
         VALUES
         (#{boardCd}, #{title}, #{content}, #{email}, now())
     </insert>
-    <select id="selectListOfArticles" parameterType="hashmap" resultType="Article">
+    
+    <select id="selectListOfArticles" parameterType="hashmap" resultType="Article" databaseId="mysql">
         SELECT 
             a.articleno, a.title, a.regdate,
             count(distinct(v.no)) hit, 
@@ -178,7 +185,8 @@
         ORDER BY articleno DESC
         LIMIT ${offset}, ${rowCount}
     </select>
-    <select id="selectCountOfArticles" parameterType="hashmap" resultType="int">
+    
+    <select id="selectCountOfArticles" parameterType="hashmap" resultType="int" databaseId="mysql">
         SELECT count(*) FROM article 
         WHERE 
             boardcd = #{boardCd}
@@ -189,10 +197,8 @@
 -->    
 <!-- MySQL and MariaDB end -->
 
-
-    <!-- Oracle start -->
-
-    <select id="selectListOfComments" parameterType="int" resultType="Comment">
+<!-- Oracle start -->
+    <select id="selectListOfComments" parameterType="int" resultType="Comment" databaseId="oracle">>
         SELECT 
             commentno, 
             articleno, 
@@ -205,12 +211,14 @@
         WHERE 
             articleno = #{articleNo}
         ORDER BY commentno DESC
-    </select>	
-    <insert id="insertComment" parameterType="Comment">
+    </select>
+    	
+    <insert id="insertComment" parameterType="Comment" databaseId="oracle">
         INSERT INTO comments (commentno, articleno, email, memo, regdate)
         VALUES (seq_comments.nextval, #{articleNo}, #{email}, #{memo}, sysdate)
-    </insert>	
-    <select id="selectNextOne" parameterType="hashmap" resultType="Article">
+    </insert>
+    	
+    <select id="selectNextOne" parameterType="hashmap" resultType="Article" databaseId="oracle">
         SELECT articleno, title
         FROM
             (SELECT rownum r,a.*
@@ -227,7 +235,8 @@
             a)
         WHERE r = 1
     </select>
-    <select id="selectPrevOne" parameterType="hashmap" resultType="Article">
+    
+    <select id="selectPrevOne" parameterType="hashmap" resultType="Article" databaseId="oracle">
         SELECT articleno, title
         FROM
             (SELECT rownum r,a.*
@@ -243,8 +252,9 @@
                 ORDER BY articleno DESC)
                 a)
         WHERE r = 1
-    </select>	
-    <select id="selectOne" parameterType="int" resultType="Article">
+    </select>
+    	
+    <select id="selectOne" parameterType="int" resultType="Article" databaseId="oracle">
         SELECT 
             a.articleno,
             title,
@@ -257,15 +267,18 @@
         WHERE 
             articleno = #{articleNo}
     </select>
-    <insert id="insertOneViews" parameterType="hashmap">
+    
+    <insert id="insertOneViews" parameterType="hashmap" databaseId="oracle">
         INSERT INTO views values (seq_views.nextval, #{articleNo}, #{ip}, #{yearMonthDayHour})
-    </insert>	
-    <insert id="insertAttachFile" parameterType="AttachFile">
+    </insert>
+    	
+    <insert id="insertAttachFile" parameterType="AttachFile" databaseId="oracle">
         INSERT INTO attachFile (attachfileno, filename, filetype, filesize, articleno, email)
         VALUES
         (seq_attachfile.nextval, #{filename}, #{filetype}, #{filesize}, #{articleNo}, #{email})
     </insert>
-    <insert id="insert" parameterType="Article" useGeneratedKeys="true">
+    
+    <insert id="insert" parameterType="Article" useGeneratedKeys="true" databaseId="oracle">
         <selectKey keyProperty="articleNo" resultType="int" order="BEFORE">
             SELECT seq_article.nextval FROM dual
         </selectKey>
@@ -273,7 +286,8 @@
         VALUES
         (#{articleNo}, #{boardCd}, #{title}, #{content}, #{email}, sysdate)
     </insert>
-    <select id="selectCountOfArticles" parameterType="hashmap" resultType="int">
+    
+    <select id="selectCountOfArticles" parameterType="hashmap" resultType="int" databaseId="oracle">
             SELECT count(*) FROM article 
             WHERE 
                     boardcd = #{boardCd}
@@ -281,7 +295,8 @@
                     AND (title LIKE '%${search}%' 	OR 	DBMS_LOB.INSTR(content, #{search}) > 0)
                     </if>
     </select>
-    <select id="selectListOfArticles" parameterType="hashmap" resultType="Article">
+    
+    <select id="selectListOfArticles" parameterType="hashmap" resultType="Article" databaseId="oracle">
         SELECT articleno, title, regdate, hit, attachfileNum, commentNum 
         FROM (
             SELECT rownum R,A.* 
@@ -306,7 +321,5 @@
             )
         WHERE R BETWEEN #{start} AND #{end}
     </select>	
-
-    <!-- Oracle end -->	
-	
+<!-- Oracle end -->	
 </mapper>

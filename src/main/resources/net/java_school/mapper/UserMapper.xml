@@ -60,9 +60,8 @@
         WHERE email = #{email} AND authority = #{authority}
     </delete>
 
-    <!-- MySQL and MariaDB start -->
-<!--    
-    <select id="selectTotalCount" resultType="int">
+<!-- MySQL and MariaDB start -->
+    <select id="selectTotalCount" resultType="int" databaseId="mysql">
         SELECT count(*)
         FROM member
         <if test="search != null and search != ''">
@@ -73,7 +72,7 @@
         </if>
     </select>
 
-    <select id="selectAll" parameterType="hashmap" resultMap="UserResult">
+    <select id="selectAll" parameterType="hashmap" resultMap="UserResult" databaseId="mysql">
         SELECT	email, name, mobile
         FROM
         member
@@ -86,13 +85,10 @@
         ORDER BY name ASC
         LIMIT ${offset}, ${rowCount}
     </select>
--->    
-    <!-- MySQL and MariaDB end -->
+<!-- MySQL and MariaDB end -->
 
-
-    <!-- Oracle start-->
-
-    <select id="selectTotalCount" resultType="int">
+<!-- Oracle start-->
+    <select id="selectTotalCount" resultType="int" databaseId="oracle">
         SELECT count(*)
         FROM member
         <if test="search != null and search != ''">
@@ -103,7 +99,7 @@
         </if>
     </select>
 
-    <select id="selectAll" parameterType="hashmap" resultMap="UserResult">
+    <select id="selectAll" parameterType="hashmap" resultMap="UserResult" databaseId="oracle">
         SELECT email, name, mobile
         FROM (
         SELECT ROWNUM R, a.*
@@ -121,7 +117,5 @@
         )
         WHERE R BETWEEN #{startRecord} AND #{endRecord}
     </select>
-
-    <!-- Oracle end -->
-
+<!-- Oracle end -->
 </mapper>
