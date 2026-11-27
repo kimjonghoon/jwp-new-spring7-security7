@@ -26,7 +26,7 @@ public class DataConfig {
 	}
 	
 	@Bean("dataSource")
-	@Profile("oracle")
+	@Profile({"oracle", "default"})
 	public DataSource dataSource() {
 		BasicDataSource dataSource = new BasicDataSource();
 		dataSource.setDriverClassName("oracle.jdbc.driver.OracleDriver");
